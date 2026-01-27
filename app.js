@@ -398,3 +398,50 @@ window.LovarTasks = {
         total: tasks.length
     })
 };
+
+// ===== Automation Jobs =====
+
+// Load and render automation jobs
+async function loadAutomationJobs() {
+    try {
+        const response = await fetch('cron-jobs.json');
+        const data = await response.json();
+        renderAutomationJobs(data.jobs);
+    } catch (error) {
+        console.log('No automation jobs found');
+    }
+}
+
+function renderAutomationJobs(jobs) {
+    const grid = document.getElementById('automationGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = jobs.map(job => `
+        <div class="automation-card">
+            <div class="automation-card-header">
+                <span class="automation-icon">${job.icon}</span>
+                <span class="automation-title">${job.name}</span>
+            </div>
+            <p class="automation-desc">${job.description}</p>
+            <div class="automation-meta">
+                <span class="automation-schedule">
+                    🕐 ${job.schedule}
+                </span>
+                <span class="automation-status ${job.enabled ? 'enabled' : 'disabled'}">
+                    ${job.enabled ? '✓ 運行中' : '○ 已停用'}
+                </span>
+            </div>
+            ${job.lastRun ? `
+                <div class="automation-last-run">
+                    上次執行: ${new Date(job.lastRun).toLocaleString('zh-TW')} 
+                    ${job.lastStatus === 'ok' ? '✅' : '❌'}
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+// Load automation jobs on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadAutomationJobs();
+});

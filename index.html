@@ -32,6 +32,10 @@
                     <span class="nav-icon">🤖</span>
                     <span>AI 工作流</span>
                 </a>
+                <a href="#" class="nav-item" data-view="automation">
+                    <span class="nav-icon">⚡</span>
+                    <span>自動任務</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-info">
@@ -110,6 +114,17 @@
                         <span class="column-count" id="completedColumnCount">0</span>
                     </div>
                     <div class="task-list" id="completedTasks"></div>
+                </div>
+            </section>
+
+            <!-- Automated Jobs Section -->
+            <section class="automation-section">
+                <div class="section-header">
+                    <h2>⚡ 自動執行任務</h2>
+                    <span class="section-subtitle">由 Lovar 每日自動運行</span>
+                </div>
+                <div class="automation-grid" id="automationGrid">
+                    <!-- Jobs will be loaded here -->
                 </div>
             </section>
         </main>

@@ -1,0 +1,29 @@
+{
+  "lastUpdated": "2026-01-27T19:00:00+08:00",
+  "jobs": [
+    {
+      "id": "daily-auto-update",
+      "name": "系統自動更新",
+      "description": "更新 Clawdbot 到最新版本，檢查 skills 更新",
+      "schedule": "每天 04:00",
+      "cronExpr": "0 4 * * *",
+      "enabled": true,
+      "icon": "🔄",
+      "category": "system",
+      "lastRun": "2026-01-27T04:00:00+08:00",
+      "lastStatus": "ok"
+    },
+    {
+      "id": "daily-ai-news",
+      "name": "AI 新聞推送",
+      "description": "搜索並推送 10 條最新 AI 資訊到 Telegram",
+      "schedule": "每天 08:00",
+      "cronExpr": "0 8 * * *",
+      "enabled": true,
+      "icon": "📰",
+      "category": "notification",
+      "lastRun": "2026-01-27T08:00:00+08:00",
+      "lastStatus": "ok"
+    }
+  ]
+}
