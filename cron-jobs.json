@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-27T19:00:00+08:00",
+  "lastUpdated": "2026-01-27T19:30:00+08:00",
   "jobs": [
     {
       "id": "daily-auto-update",
@@ -24,6 +24,18 @@
       "category": "notification",
       "lastRun": "2026-01-27T08:00:00+08:00",
       "lastStatus": "ok"
+    },
+    {
+      "id": "lingxing-api-reminder",
+      "name": "領星 API 提醒",
+      "description": "提醒獲取領星 ERP API 憑證，完成飛書數據自動化",
+      "schedule": "2026-01-28 09:00",
+      "cronExpr": "0 9 28 1 *",
+      "enabled": true,
+      "icon": "🔔",
+      "category": "reminder",
+      "lastRun": null,
+      "lastStatus": null
     }
   ]
 }
