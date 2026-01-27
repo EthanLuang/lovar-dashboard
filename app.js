@@ -401,12 +401,17 @@ window.LovarTasks = {
 
 // ===== Automation Jobs =====
 
+let automationJobs = [];
+
 // Load and render automation jobs
 async function loadAutomationJobs() {
     try {
         const response = await fetch('cron-jobs.json');
         const data = await response.json();
-        renderAutomationJobs(data.jobs);
+        automationJobs = data.jobs;
+        renderAutomationJobs(automationJobs);
+        addAutomationToStats();
+        addAutomationToTaskBoard();
     } catch (error) {
         console.log('No automation jobs found');
     }
@@ -416,8 +421,12 @@ function renderAutomationJobs(jobs) {
     const grid = document.getElementById('automationGrid');
     if (!grid) return;
     
-    grid.innerHTML = jobs.map(job => `
-        <div class="automation-card">
+    grid.innerHTML = jobs.map(job => {
+        const nextRun = getNextRunTime(job.cronExpr);
+        const statusClass = job.enabled ? (job.lastStatus === 'ok' ? 'success' : 'error') : 'disabled';
+        
+        return `
+        <div class="automation-card" data-status="${statusClass}">
             <div class="automation-card-header">
                 <span class="automation-icon">${job.icon}</span>
                 <span class="automation-title">${job.name}</span>
@@ -431,14 +440,96 @@ function renderAutomationJobs(jobs) {
                     ${job.enabled ? '✓ 運行中' : '○ 已停用'}
                 </span>
             </div>
-            ${job.lastRun ? `
-                <div class="automation-last-run">
-                    上次執行: ${new Date(job.lastRun).toLocaleString('zh-TW')} 
-                    ${job.lastStatus === 'ok' ? '✅' : '❌'}
+            <div class="automation-times">
+                ${job.lastRun ? `
+                    <div class="automation-last-run">
+                        ⏮️ 上次: ${formatTime(job.lastRun)} ${job.lastStatus === 'ok' ? '✅' : '❌'}
+                    </div>
+                ` : ''}
+                <div class="automation-next-run">
+                    ⏭️ 下次: ${nextRun}
                 </div>
-            ` : ''}
+            </div>
         </div>
-    `).join('');
+    `}).join('');
+}
+
+// Add automation jobs to stats
+function addAutomationToStats() {
+    const enabledCount = automationJobs.filter(j => j.enabled).length;
+    const automationStat = document.getElementById('automationCount');
+    if (automationStat) {
+        automationStat.textContent = enabledCount;
+    }
+}
+
+// Add automation jobs to task board as "active" tasks
+function addAutomationToTaskBoard() {
+    const activeTasks = document.getElementById('activeTasks');
+    if (!activeTasks) return;
+    
+    automationJobs.filter(j => j.enabled).forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'task-card automation-task';
+        card.innerHTML = `
+            <div class="task-card-header">
+                <span class="task-card-title">${job.icon} ${job.name}</span>
+                <span class="task-card-priority">⚡</span>
+            </div>
+            <p class="task-card-desc">${job.description}</p>
+            <div class="task-card-meta">
+                <span class="task-card-category">🤖 自動任務</span>
+                <span>🕐 ${job.schedule}</span>
+            </div>
+            <div class="task-card-status ${job.lastStatus === 'ok' ? 'success' : 'error'}">
+                ${job.lastStatus === 'ok' ? '✅ 正常運行' : '❌ 執行異常'}
+            </div>
+        `;
+        activeTasks.appendChild(card);
+    });
+    
+    // Update active count
+    const currentActive = parseInt(elements.activeCount.textContent) || 0;
+    const autoCount = automationJobs.filter(j => j.enabled).length;
+    elements.activeCount.textContent = currentActive + autoCount;
+    elements.activeColumnCount.textContent = currentActive + autoCount;
+    
+    // Update total count
+    const currentTotal = parseInt(elements.totalCount.textContent) || 0;
+    elements.totalCount.textContent = currentTotal + autoCount;
+}
+
+// Format time to readable string
+function formatTime(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleString('zh-TW', {
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Calculate next run time from cron expression (simplified)
+function getNextRunTime(cronExpr) {
+    const parts = cronExpr.split(' ');
+    const hour = parts[1];
+    const minute = parts[0];
+    
+    const now = new Date();
+    const next = new Date();
+    next.setHours(parseInt(hour), parseInt(minute), 0, 0);
+    
+    if (next <= now) {
+        next.setDate(next.getDate() + 1);
+    }
+    
+    return next.toLocaleString('zh-TW', {
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 // Load automation jobs on page load

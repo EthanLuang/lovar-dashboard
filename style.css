@@ -678,3 +678,50 @@ body {
     font-size: 11px;
     color: var(--text-muted);
 }
+
+/* ===== Automation Task in Board ===== */
+.task-card.automation-task {
+    border-left: 3px solid var(--accent-primary);
+}
+
+.task-card-status {
+    margin-top: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.task-card-status.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.task-card-status.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+}
+
+.automation-times {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.automation-card[data-status="success"]::before {
+    background: var(--success);
+}
+
+.automation-card[data-status="error"]::before {
+    background: var(--danger);
+}
+
+.automation-card[data-status="disabled"]::before {
+    background: var(--text-muted);
+}
