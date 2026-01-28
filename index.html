@@ -6,6 +6,8 @@
     <title>Lovar 任務儀表盤</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="app">
@@ -20,6 +22,10 @@
                     <span class="nav-icon">📊</span>
                     <span>儀表盤</span>
                 </a>
+                <a href="#" class="nav-item" data-view="today">
+                    <span class="nav-icon">📅</span>
+                    <span>今日待辦</span>
+                </a>
                 <a href="#" class="nav-item" data-view="tasks">
                     <span class="nav-icon">📋</span>
                     <span>所有任務</span>
@@ -32,11 +38,22 @@
                     <span class="nav-icon">🤖</span>
                     <span>AI 工作流</span>
                 </a>
-                <a href="#" class="nav-item" data-view="automation">
-                    <span class="nav-icon">⚡</span>
-                    <span>自動任務</span>
-                </a>
             </nav>
+            
+            <!-- Lovar Status -->
+            <div class="lovar-status">
+                <div class="lovar-header">
+                    <span class="lovar-avatar">🦊</span>
+                    <div class="lovar-info">
+                        <span class="lovar-name">Lovar</span>
+                        <span class="lovar-state" id="lovarState">● 在線</span>
+                    </div>
+                </div>
+                <div class="lovar-activity" id="lovarActivity">
+                    等待指令...
+                </div>
+            </div>
+            
             <div class="sidebar-footer">
                 <div class="user-info">
                     <span class="user-avatar">K</span>
@@ -54,158 +71,184 @@
                     <p class="page-subtitle" id="currentDate"></p>
                 </div>
                 <div class="header-right">
+                    <div class="sync-status" id="syncStatus">
+                        <span class="sync-icon">🔄</span>
+                        <span class="sync-text">已同步</span>
+                    </div>
                     <button class="btn btn-primary" id="newTaskBtn">
                         <span>+</span> 新建任務
                     </button>
                 </div>
             </header>
 
-            <!-- Stats Cards -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon pending">📝</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="pendingCount">0</span>
-                        <span class="stat-label">待開始</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon active">🔄</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="activeCount">0</span>
-                        <span class="stat-label">進行中</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon completed">✅</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="completedCount">0</span>
-                        <span class="stat-label">已完成</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon total">📊</div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="totalCount">0</span>
-                        <span class="stat-label">總任務</span>
-                    </div>
-                </div>
-            </section>
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Left Column -->
+                <div class="dashboard-left">
+                    <!-- Today's Focus -->
+                    <section class="card today-focus">
+                        <div class="card-header">
+                            <h2>📅 今日待辦</h2>
+                            <span class="badge" id="todayCount">0</span>
+                        </div>
+                        <div class="today-list" id="todayList">
+                            <!-- Dynamic content -->
+                        </div>
+                        <div class="today-empty" id="todayEmpty" style="display:none;">
+                            <span>🎉</span>
+                            <p>今日任務已完成！</p>
+                        </div>
+                    </section>
 
-            <!-- Task Columns -->
-            <section class="task-board">
-                <div class="task-column" data-status="pending">
-                    <div class="column-header">
-                        <h3>📝 待開始</h3>
-                        <span class="column-count" id="pendingColumnCount">0</span>
-                    </div>
-                    <div class="task-list" id="pendingTasks"></div>
-                </div>
-                <div class="task-column" data-status="active">
-                    <div class="column-header">
-                        <h3>🔄 進行中</h3>
-                        <span class="column-count" id="activeColumnCount">0</span>
-                    </div>
-                    <div class="task-list" id="activeTasks"></div>
-                </div>
-                <div class="task-column" data-status="completed">
-                    <div class="column-header">
-                        <h3>✅ 已完成</h3>
-                        <span class="column-count" id="completedColumnCount">0</span>
-                    </div>
-                    <div class="task-list" id="completedTasks"></div>
-                </div>
-            </section>
+                    <!-- Stats Cards -->
+                    <section class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon pending">📝</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="pendingCount">0</span>
+                                <span class="stat-label">待開始</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon active">🔄</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="activeCount">0</span>
+                                <span class="stat-label">進行中</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon completed">✅</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="completedCount">0</span>
+                                <span class="stat-label">已完成</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon total">📊</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="totalCount">0</span>
+                                <span class="stat-label">總任務</span>
+                            </div>
+                        </div>
+                    </section>
 
-            <!-- Automated Jobs Section -->
-            <section class="automation-section">
-                <div class="section-header">
-                    <h2>⚡ 自動執行任務</h2>
-                    <span class="section-subtitle">由 Lovar 每日自動運行</span>
+                    <!-- Task Board -->
+                    <section class="task-board">
+                        <div class="task-column" data-status="pending">
+                            <div class="column-header">
+                                <h3>📝 待開始</h3>
+                                <span class="column-count" id="pendingColumnCount">0</span>
+                            </div>
+                            <div class="task-list" id="pendingTasks"></div>
+                        </div>
+                        <div class="task-column" data-status="active">
+                            <div class="column-header">
+                                <h3>🔄 進行中</h3>
+                                <span class="column-count" id="activeColumnCount">0</span>
+                            </div>
+                            <div class="task-list" id="activeTasks"></div>
+                        </div>
+                        <div class="task-column" data-status="completed">
+                            <div class="column-header">
+                                <h3>✅ 已完成</h3>
+                                <span class="column-count" id="completedColumnCount">0</span>
+                            </div>
+                            <div class="task-list" id="completedTasks"></div>
+                        </div>
+                    </section>
                 </div>
-                <div class="automation-grid" id="automationGrid">
-                    <!-- Jobs will be loaded here -->
+
+                <!-- Right Column - Notifications & Lovar -->
+                <div class="dashboard-right">
+                    <!-- Notification Center -->
+                    <section class="card notifications">
+                        <div class="card-header">
+                            <h2>🔔 提醒中心</h2>
+                            <span class="badge urgent" id="notifCount">0</span>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <!-- Dynamic content -->
+                        </div>
+                    </section>
+
+                    <!-- Lovar Activity Log -->
+                    <section class="card lovar-log">
+                        <div class="card-header">
+                            <h2>🦊 Lovar 動態</h2>
+                        </div>
+                        <div class="activity-list" id="activityList">
+                            <!-- Dynamic content -->
+                        </div>
+                    </section>
+
+                    <!-- Quick Actions -->
+                    <section class="card quick-actions">
+                        <div class="card-header">
+                            <h2>⚡ 快捷指令</h2>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn" data-action="sync-feishu">
+                                📊 同步飛書數據
+                            </button>
+                            <button class="action-btn" data-action="check-competitors">
+                                🔍 檢查競品
+                            </button>
+                            <button class="action-btn" data-action="daily-report">
+                                📈 生成日報
+                            </button>
+                            <button class="action-btn" data-action="refresh">
+                                🔄 刷新儀表盤
+                            </button>
+                        </div>
+                    </section>
                 </div>
-            </section>
+            </div>
         </main>
     </div>
 
     <!-- New Task Modal -->
     <div class="modal" id="taskModal">
-        <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">新建任務</h2>
+                <h2>新建任務</h2>
                 <button class="modal-close" id="closeModal">&times;</button>
             </div>
             <form id="taskForm">
                 <div class="form-group">
-                    <label for="taskName">任務名稱 *</label>
-                    <input type="text" id="taskName" required placeholder="輸入任務名稱">
+                    <label>任務名稱</label>
+                    <input type="text" id="taskTitle" required placeholder="輸入任務名稱...">
                 </div>
                 <div class="form-group">
-                    <label for="taskDesc">任務描述</label>
-                    <textarea id="taskDesc" rows="3" placeholder="詳細描述任務內容"></textarea>
+                    <label>描述</label>
+                    <textarea id="taskDesc" placeholder="任務描述..."></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="taskCategory">分類</label>
+                        <label>分類</label>
                         <select id="taskCategory">
                             <option value="amazon">🛒 亞馬遜運營</option>
                             <option value="ai">🤖 AI 工作流</option>
-                            <option value="data">📊 數據分析</option>
-                            <option value="other">📌 其他</option>
+                            <option value="other">📋 其他</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="taskPriority">優先級</label>
+                        <label>優先級</label>
                         <select id="taskPriority">
                             <option value="high">🔴 高</option>
-                            <option value="medium" selected>🟡 中</option>
+                            <option value="medium">🟡 中</option>
                             <option value="low">🟢 低</option>
                         </select>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="taskStatus">狀態</label>
-                        <select id="taskStatus">
-                            <option value="pending">📝 待開始</option>
-                            <option value="active">🔄 進行中</option>
-                            <option value="completed">✅ 已完成</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDue">截止日期</label>
-                        <input type="date" id="taskDue">
-                    </div>
-                </div>
                 <div class="form-group">
-                    <label for="taskProgress">進度 (<span id="progressValue">0</span>%)</label>
-                    <input type="range" id="taskProgress" min="0" max="100" value="0">
+                    <label>截止日期</label>
+                    <input type="date" id="taskDue">
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
-                    <button type="submit" class="btn btn-primary">保存任務</button>
+                    <button type="button" class="btn btn-secondary" id="cancelTask">取消</button>
+                    <button type="submit" class="btn btn-primary">創建任務</button>
                 </div>
-                <input type="hidden" id="taskId">
             </form>
-        </div>
-    </div>
-
-    <!-- Task Detail Modal -->
-    <div class="modal" id="detailModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="detailTitle">任務詳情</h2>
-                <button class="modal-close" id="closeDetailModal">&times;</button>
-            </div>
-            <div class="task-detail" id="taskDetail"></div>
-            <div class="form-actions">
-                <button class="btn btn-danger" id="deleteTaskBtn">刪除</button>
-                <button class="btn btn-secondary" id="editTaskBtn">編輯</button>
-            </div>
         </div>
     </div>
 

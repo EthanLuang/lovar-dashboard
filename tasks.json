@@ -1,0 +1,69 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "領星 API 集成",
+      "description": "從領星 ERP 自動拉取數據寫入飛書表格",
+      "category": "ai",
+      "priority": "high",
+      "status": "pending",
+      "dueDate": "2026-01-29",
+      "subtasks": [
+        {"text": "獲取領星 API 憑證", "done": false},
+        {"text": "測試 API 連接", "done": false},
+        {"text": "自動同步銷售/庫存數據", "done": false},
+        {"text": "設置每日數據快報", "done": false}
+      ],
+      "createdAt": "2026-01-28T22:12:00+08:00"
+    },
+    {
+      "id": "task-002",
+      "title": "飛書數據自動化",
+      "description": "自動化分析飛書多維表格數據，生成報表",
+      "category": "ai",
+      "priority": "high",
+      "status": "active",
+      "dueDate": "2026-01-30",
+      "subtasks": [
+        {"text": "讀取飛書表格結構", "done": true},
+        {"text": "設計自動報表方案", "done": false},
+        {"text": "實現每日銷售快報", "done": false},
+        {"text": "實現異常監控告警", "done": false}
+      ],
+      "createdAt": "2026-01-28T22:12:00+08:00"
+    },
+    {
+      "id": "task-003",
+      "title": "競品追蹤器開發",
+      "description": "自動追蹤競品價格/評論/排名變化",
+      "category": "amazon",
+      "priority": "medium",
+      "status": "pending",
+      "dueDate": "2026-02-05",
+      "subtasks": [
+        {"text": "獲取 ASIN 列表", "done": false},
+        {"text": "設計數據抓取方案", "done": false},
+        {"text": "實現自動監控", "done": false},
+        {"text": "設置變化告警", "done": false}
+      ],
+      "createdAt": "2026-01-28T22:12:00+08:00"
+    },
+    {
+      "id": "task-004",
+      "title": "儀表盤功能升級",
+      "description": "增加每日待辦、實時更新、數據看板等功能",
+      "category": "ai",
+      "priority": "high",
+      "status": "active",
+      "dueDate": "2026-01-29",
+      "subtasks": [
+        {"text": "設計新功能方案", "done": false},
+        {"text": "實現每日待辦清單", "done": false},
+        {"text": "添加實時更新機制", "done": false},
+        {"text": "集成飛書數據看板", "done": false}
+      ],
+      "createdAt": "2026-01-28T22:12:00+08:00"
+    }
+  ],
+  "lastUpdated": "2026-01-28T22:12:00+08:00"
+}
